@@ -12,36 +12,30 @@ const numberMappings = {
     zero: '0o'
 }
 
-function digitFilter(line)
-{
-    return line.replace(/\D/g,'');
+function digitFilter(line) {
+    return line.replace(/\D/g, '');
 }
 
-function sum(a, b)
-{
+function sum(a, b) {
     return a + b;
 }
 
-function generateNumber(line)
-{
-    var number = line.length == 1 ? line + line : (line[0]+line[line.length -1]);
+function generateNumber(line) {
+    var number = line.length == 1 ? line + line : (line[0] + line[line.length - 1]);
     return parseInt(number);
 }
 
-function partTwoMapper(line)
-{
+function partTwoMapper(line) {
     return Object.entries(numberMappings)
         .reduce((val, [number, mapping]) => val.replaceAll(number, mapping), line);
 }
 
-function partTwo(input)
-{
+function partTwo(input) {
     return input.map(partTwoMapper).map(digitFilter).map(generateNumber).reduce(sum)
 }
 
 
-function partOne(input)
-{
+function partOne(input) {
     return input.map(digitFilter).map(generateNumber).reduce(sum)
 }
 
