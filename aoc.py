@@ -7,17 +7,23 @@ import requests
 
 
 class ExampleParser(HTMLParser):
+    in_pre = False
     found = False
     reading = False
     data = None
 
     def handle_starttag(self, tag, attributes):
-        if tag != "code" or self.found:
+        if self.found:
             return
-        self.found = True
-        self.reading = True
+        if tag == "code" and self.in_pre:
+            self.found = True
+            self.reading = True
+        if tag == "pre":
+            self.in_pre = True
 
     def handle_endtag(self, tag):
+        if tag == "pre":
+            self.in_pre = False
         if tag == "code" and self.reading:
             self.reading = False
 
@@ -36,7 +42,6 @@ def get_sesession():
     if os.path.isfile(env):
         with open(env) as file:
             for line in file.readlines():
-                print(line)
                 var, val = line.strip().split("=")
                 os.environ[var] = val
 
@@ -48,8 +53,10 @@ def get_sesession():
     raise Exception("Could not retrieve AOC session")
 
 
-def get_data(year, day):
+def get_data(year, day, output_dir: str = None):
     path = f"input-{year}-{day}.txt"
+    if output_dir:
+        path = os.path.join(output_dir, path)
     if os.path.isfile(path):
         with open(path) as file:
             return file.read()
@@ -110,7 +117,11 @@ class AdventOfCode:
         if use_example:
             data = get_example(year, day)
 
+        print("\nParsing Input")
+        start = time.time()
         self.data = self.parse_data(data)
+        duration = time.time() - start
+        print(f"Parsing Input took {duration} seconds\n")
 
     def parse_data(self, data):
         return [line for line in data.split("\n") if line.strip()]
@@ -167,7 +178,9 @@ if __name__ == "__main__":
                 f.write(
                     template.replace("<DAY>", parsed.day).replace("<YEAR>", parsed.year)
                 )
-            if datetime.date.today() >= datetime.date(parsed.year, 12, parsed.day):
-                data = get_data(parsed.year, parsed.day)
+            if datetime.date.today() >= datetime.date(
+                int(parsed.year), 12, int(parsed.day)
+            ):
+                get_data(parsed.year, parsed.day, output_dir=os.path.dirname(path))
     else:
         print(parsed)
