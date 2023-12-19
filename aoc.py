@@ -10,7 +10,7 @@ class ExampleParser(HTMLParser):
     in_pre = False
     found = False
     reading = False
-    data = None
+    data = ""
 
     def handle_starttag(self, tag, attributes):
         if self.found:
@@ -29,7 +29,7 @@ class ExampleParser(HTMLParser):
 
     def handle_data(self, data):
         if self.reading:
-            self.data = data
+            self.data += data
 
 
 def get_sesession():
