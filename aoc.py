@@ -124,7 +124,10 @@ class AdventOfCode:
         print(f"Parsing Input took {duration} seconds\n")
 
     def parse_data(self, data):
-        return [line for line in data.split("\n") if line.strip()]
+        parsed = [line for line in data.split("\n") if line.strip()]
+        self.height = len(parsed)
+        self.width = len(parsed[0])
+        return parsed
 
     def solve(self):
         print("Running Part 1" + (" using example input" if self.use_example else ""))
